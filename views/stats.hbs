@@ -1,0 +1,31 @@
+<div id="page-content-wrapper">
+  <div class="container">
+    <div class="row">
+      <table id="example" class="display" cellspacing="0" width="100%">
+         <!--<thead>
+             <tr>
+                 <th>Stackname</th>
+                 <th>stackvalue</th>
+             </tr>
+           </thead>-->
+     </table>
+   </div>
+ </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#example').DataTable({
+        "processing" : true,
+        "ajax" : {
+            "url" : "/light",
+            dataSrc : ''
+        },
+        "columns" : [ {
+            "data" : "title"
+        }, {
+            "data" : "stacks"
+        }]
+    });
+});
+</script>
