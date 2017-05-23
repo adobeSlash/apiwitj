@@ -45,7 +45,9 @@ router.get('/', function(req, res, next) {
                    var stacks = []; //list of item in the aimed stack
                    obj.stackName = $(this).children('.category-title').text(); //name of the stakc
                    $(this).children('.company-stack-list').children('.stack-item').each(function(c, elem) {
-                     stacks[c] = $(this).text().replace(/\s+/g, ''); //one stack element
+                     if($(this).text().indexOf('+')==-1){
+                       stacks[c] = $(this).text().replace(/\s+/g, ''); //one stack element
+                     }
                    });
                    obj.stackValue = stacks;
                    stackF.push(obj);
@@ -117,7 +119,9 @@ router.get('/light', function(req, res, next) {
 
                  $(this).find('div[class=company-stack-category]').each(function(i, elem) {
                    $(this).children('.company-stack-list').children('.stack-item').each(function(c, elem) {
-                     stackF.push($(this).text().replace(/\s+/g, '')); //one stack element
+                     if($(this).text().indexOf('+')==-1){
+                       stackF.push($(this).text().replace(/\s+/g, '')); //one stack element
+                     }
                    });
                  });
                  article.stacks = stackF;

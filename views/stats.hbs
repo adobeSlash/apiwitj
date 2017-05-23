@@ -2,30 +2,59 @@
   <div class="container">
     <div class="row">
       <table id="example" class="display" cellspacing="0" width="100%">
-         <!--<thead>
+         <thead>
              <tr>
-                 <th>Stackname</th>
-                 <th>stackvalue</th>
+                 <th>Stack</th>
+                 <th>Technologies</th>
              </tr>
-           </thead>-->
+           </thead>
      </table>
    </div>
  </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    $('#example').DataTable({
-        "processing" : true,
-        "ajax" : {
-            "url" : "/light",
-            dataSrc : ''
-        },
-        "columns" : [ {
-            "data" : "title"
-        }, {
-            "data" : "stacks"
-        }]
-    });
+$('#example').DataTable( {
+  "processing" : true,
+  "ajax": {
+    "url": "/",
+    "dataSrc" : function ( json ) {
+      return json.reduce(function(a, b) {
+      	return a.concat(b)
+      }).map(function(value) {
+      	return value.stacks
+      })
+      .reduce(function(a, b) {
+      	return a.concat(b)
+      })
+    }
+  },
+  "columns": [
+    { "data": "stackName" },
+    { "data": "stackValue[, ]" }
+  ],
+  "language": {
+      "lengthMenu": "Afficher _MENU_ entrées par page",
+      "zeroRecords": "Aucune entrées disponibles",
+      "search": "Recherche:",
+      "info": "Page _PAGE_ sur _PAGES_",
+      "infoEmpty": "Aucune entrées disponibles",
+      "infoFiltered": "(recherche effectuée sur _MAX_ entrées)",
+      "paginate": {
+          "first": "Première",
+          "last": "Dernière",
+          "next": "Suivante",
+          "previous": "Précédente"
+      },
+      "infoFiltered": "(filtered from _MAX_ total records)"
+  },
+  "bPaginate": false,
+  dom: 'Bfrtip',
+  buttons: [
+      { extend: 'print', text: 'Imprimer' ,className: 'btn-primary'},
+      { extend: 'excel', text: 'Exporter vers Excel', className: 'btn-success',exportOptions: {
+              orthogonal: 'sort'
+          } }
+  ],
 });
 </script>
