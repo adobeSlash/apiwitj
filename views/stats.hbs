@@ -1,7 +1,17 @@
 <div id="page-content-wrapper">
   <div class="container">
     <div class="row">
-      <table id="example" class="display" cellspacing="0" width="100%">
+      <h1>Informations relatives à une stack</h1>
+    </div>
+    <div class="row">
+      <div class="col-xs-8">
+        <canvas id="myChartRes" class="col-xs-6" style="pointer-events: none;"></canvas>
+      </div>
+      <br/><br/>
+      <button id="save-btn">Save Chart Image</button>
+    </div>
+    <div class="row">
+      <table id="table" class="display" cellspacing="0" width="100%">
          <thead>
              <tr>
                  <th>Stack</th>
@@ -14,7 +24,14 @@
 </div>
 
 <script>
-$('#example').DataTable( {
+
+//Add input filed corresponding to the table
+$('#table thead th').each( function () {
+    var title = $(this).text();
+    $(this).html( '<input type="text" id="search-'+ title +'" placeholder="Search '+title+'" />' );
+} );
+
+var table = $('#table').DataTable( {
   "processing" : true,
   "ajax": {
     "url": "/",
@@ -56,5 +73,107 @@ $('#example').DataTable( {
               orthogonal: 'sort'
           } }
   ],
+  "fnDrawCallback": function( oSettings ) {
+    var oTable = document.getElementById('table');
+    var rowLength = oTable.rows.length;
+
+    var research = $('#search-Technologies').val();
+
+     //compte des compteurs technologie
+     api = this.api();
+     var mapResult = new Map();
+
+     for(var t = 1; t<rowLength-1; t++){
+       var value = oTable.rows.item(t).cells.item(1).innerHTML
+       var techs = value.split(',');
+       for(var c = 0; c < techs.length; c++){
+         var tempTech = techs[c].replace(/\s+/g, '')
+         if(!mapResult.get(tempTech)){
+           //Nouvelle technologie
+           mapResult.set(tempTech, 1);
+         }else{
+           //On incremente le compteur pour cette technologie
+           mapResult.set(tempTech, mapResult.get(tempTech) + 1);
+         }
+       }
+     }
+
+     //get the number of iteration for this research
+     var countResearch = mapResult.get(research);
+     mapResult.delete(research);
+
+     //Affichage des resultats obtenus
+     if(research){
+       var ctxRes = document.getElementById('myChartRes').getContext('2d');
+       var dataRes = {
+           labels : Array.from(mapResult.keys()),
+           datasets : [ {
+             label : "Valeurs saisies",
+             borderWidth : 1,
+             data : Array.from(mapResult.values()),
+           } ]
+         };
+
+         Chart.defaults.global.legend.display = false;
+         Chart.defaults.global.tooltips.enabled = false;
+
+         var myChartRes = new Chart(ctxRes, {
+            type : 'horizontalBar',
+            data : dataRes,
+             options: {
+                 maintainAspectRatio: false,
+                 legend: {
+                     display: false
+                 },showTooltips: false,
+                 scales: {
+                   xAxes: [{
+                       ticks: {
+                           beginAtZero:true,
+                           max: countResearch
+                       }
+                   }]
+                 }
+               }
+           });
+     }
+   }
 });
+
+//Add listener to reseach in the table
+table.columns().every( function () {
+    var that = this;
+
+    $( 'input', this.header() ).on( 'keyup change', function () {
+        if ( that.search() !== this.value ) {
+            that
+                .search( this.value )
+                .draw();
+        }
+    } );
+} );
+
+//Print the Chart
+$("#save-btn").click(function() {
+  const dataUrl = document.getElementById('myChartRes').toDataURL();
+
+  let windowContent = '<!DOCTYPE html>';
+  windowContent += '<html>';
+  windowContent += '<head><title>Print canvas</title></head>';
+  windowContent += '<body>';
+  windowContent += '<img src="' + dataUrl + '">';
+  windowContent += '</body>';
+  windowContent += '</html>';
+
+  const printWin = window.open('', '', 'width=' + screen.availWidth + ',height=' + screen.availHeight);
+  printWin.document.open();
+  printWin.document.write(windowContent);
+
+  printWin.document.addEventListener('load', function() {
+      printWin.focus();
+      printWin.print();
+      printWin.document.close();
+      printWin.close();
+  }, true);
+});
+
 </script>

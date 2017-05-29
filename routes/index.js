@@ -9,7 +9,7 @@ const Horseman = require('node-horseman');
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  const pages = [0,1,2,3,4,5]; //list of page we want to parse
+  const pages = [0,1,2,3,4,5,6]; //list of page we want to parse
   const articles = []; //put all the article info in
 
   console.log('start webscraping');
