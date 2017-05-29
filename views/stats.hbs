@@ -5,8 +5,10 @@
     </div>
     <div class="row">
       <div class="col-xs-8">
-        <canvas id="myChartRes" class="col-xs-6" style="pointer-events: none;"></canvas>
+        <canvas id="myChartRes" class="col-xs-12" style="pointer-events: none;"></canvas>
       </div>
+    </div>
+    <div class="row">
       <br/><br/>
       <button id="save-btn">Save Chart Image</button>
     </div>
@@ -74,6 +76,11 @@ var table = $('#table').DataTable( {
           } }
   ],
   "fnDrawCallback": function( oSettings ) {
+
+    var canvas = document.getElementsByTagName('canvas')[0];
+    canvas.width  = 800;
+    canvas.height = 600;
+
     var oTable = document.getElementById('table');
     var rowLength = oTable.rows.length;
 
@@ -121,7 +128,6 @@ var table = $('#table').DataTable( {
             type : 'horizontalBar',
             data : dataRes,
              options: {
-                 maintainAspectRatio: false,
                  legend: {
                      display: false
                  },showTooltips: false,
